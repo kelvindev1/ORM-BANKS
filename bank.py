@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # first we will import our data base then create a banks table.
 from __init__ import CURSOR, CONN
 
@@ -161,9 +162,8 @@ class Bank():
             FROM banks
             WHERE name = ?
         """
-        row = CURSOR.execute(sql,(name,)).fetchone()
-        return cls.instance_from_db(row) if row else None
-    
+        rows = CURSOR.execute(sql,(name,)).fetchall()
+        return [cls.instance_from_db(row) for row in rows] 
 
 # delete method :  deletes the table row corresponding to the current Department instance.
     def delete(self):
@@ -198,10 +198,10 @@ class Bank():
 
 
 # Branch = Bank("KCB BANK", "Kelvin Mutugi", "Nairobi Tom Mboya Street")
+# Branch.drop_table()
 # Branch.create_table()
 # Branch.save()
 # print(Branch)
-# Branch.drop_table()
 
 
 # Bank.drop_table()

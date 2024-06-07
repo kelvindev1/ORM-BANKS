@@ -1,4 +1,6 @@
+#!/usr/bin/env python3
 #  mapping object Relationships
+
 
 from __init__ import CURSOR, CONN
 from bank import Bank
@@ -10,14 +12,14 @@ class Owner():
 
     def __init__(self, name, id_number, phone, address, bank_id, id = None):
         self.id = id
-        self.name = name
-        self.id_number = id_number
-        self.phone = phone
-        self.address = address
-        self.bank_id = bank_id
+        self.name = str(name)
+        self.id_number = int(id_number)
+        self.phone = int(phone)
+        self.address = str(address)
+        self.bank_id = int(bank_id)
 
     def __repr__(self):
-        return ( f'<Owner {self.id}: {self.name}, {self.id_number} {self.phone}, {self.address}>,' + 
+        return ( f'<Owner {self.id}: {self.name}, id:{self.id_number}, phone:{self.phone}, from {self.address}>,' + 
                 f'<Bank ID: {self.bank_id}>' )
     
 # let's add some properties
@@ -40,6 +42,7 @@ class Owner():
             self._id_number = id_number
         else:
             raise ValueError("id_number must be an integer")
+
         
     @property
     def phone(self):
@@ -69,7 +72,7 @@ class Owner():
         if type(bank_id) is int and Bank.find_by_id(bank_id):
             self._bank_id = bank_id
         else:
-            raise ValueError("bank_id must reference a department in the database")
+            raise ValueError("bank_id must reference a bank in the database")
 
 
 
@@ -127,7 +130,7 @@ class Owner():
 # delete 
     def delete(self):
         sql = """
-            DELETE FROM owners WHERE
+            DELETE FROM owners
             WHERE id = ?
         """
         CURSOR.execute(sql, (self.id,))
@@ -193,10 +196,10 @@ class Owner():
         sql = """
             SELECT *
             FROM owners
-            WHERE name is ?
+            WHERE name = ?
         """
-        row = CURSOR.execute(sql, (name,)).fetchone()
-        return cls.instance_from_db(row) if row else None
+        rows = CURSOR.execute(sql, (name,)).fetchall()
+        return [cls.instance_from_db(row) for row in rows]
     
 
 #  ---> update the Bank class to Compute associated Owner instances
@@ -206,8 +209,8 @@ class Owner():
 
 # owner = Owner("Kelvinss", 11111, 0-73333-3333, "Nairobi", 1)
 
-# owner.create_table()
 # owner.drop_table()
+# owner.create_table()
 # owner.save()
 # print(owner)
 
